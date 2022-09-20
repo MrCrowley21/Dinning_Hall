@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from Components_logic.Dinning_hall import *
 from Components_logic.Table import *
 from Components_logic.Waiter import *
+from Components_logic.Prepared_order import *
 
 # initialize the logger mode
 logging.basicConfig(level=logging.DEBUG)
@@ -14,10 +15,11 @@ app = Flask(__name__)
 # define server function to receive prepared orders from kitchen
 @app.route('/receive_prepared_order', methods=['POST'])
 def receive_prepared_order():
-    prepared_order = request.json  # extract sent data
-    logging.info(f'Prepared order {prepared_order["order_id"]} received for the table {prepared_order["table_id"]}')
-    dinning_hall.provide_the_order(prepared_order)  # announce dinning hall about food arrival
-    return jsonify(prepared_order)
+    received_order = request.json  # extract sent data
+    prepared_order = PreparedOrder(received_order)
+    logging.info(f'Prepared order {received_order["order_id"]} received for the table {received_order["table_id"]}')
+    dinning_hall.receive_the_order(prepared_order)  # announce dinning hall about food arrival
+    return jsonify(received_order)
 
 
 # start the program execution
