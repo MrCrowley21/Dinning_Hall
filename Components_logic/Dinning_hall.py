@@ -33,9 +33,12 @@ class DinningHall:
             t[i].join()
         # start threads for waiters
         for waiter in self.waiters:
-            Thread(target=waiter.pick_up_order, args=(self.tables,)).start()
+            Thread(target=waiter.serve_tables, args=(self.tables,)).start()
 
     # notify the table about food arrival
-    def provide_the_order(self, prepared_order):
-        self.tables[prepared_order['table_id'] - 1].receive_the_order(prepared_order['order_id'],
-                                                                      prepared_order['max_wait'])
+    def receive_the_order(self, prepared_order):
+        # self.tables[prepared_order['table_id'] - 1].receive_the_order(prepared_order['order_id'],
+        #                                                               prepared_order['max_wait'])
+        current_waiter = self.waiters[prepared_order.waiter_id - 1]
+        with current_waiter.lock:
+            current_waiter.order_to_serve.append(prepared_order)

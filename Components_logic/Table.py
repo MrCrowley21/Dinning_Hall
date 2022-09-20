@@ -48,10 +48,10 @@ class Table:
         return self.order
 
     # simulate the phase of receiving the orders
-    def receive_the_order(self, order_id, max_wait):
+    def receive_the_order(self, received_order):
         # set the absence of orders and free the table
         self.order = None
         self.state = free
         # notify about order receiving by the table
-        logging.info(f'Order {order_id} has been received by the table {self.table_id}')
+        logging.info(f'Order {received_order.order_id} has been received by the table {self.table_id}')
         Thread(target=self.occupy_the_table()).start()  # thread of table behaviour simulation

@@ -13,9 +13,11 @@ class Waiter:
     def __init__(self, waiter_id, dinning_hall):
         self.waiter_id = waiter_id  # define the waite id
         self.dinning_hall = dinning_hall  # initiate the dinning hall configuration
+        self.order_to_serve = []
+        self.lock = Lock()
 
     # simulate picking the order up process
-    def pick_up_order(self, tables):
+    def serve_tables(self, tables):
         while True:
             for table in tables:
                 # picking up the orders if table is ready
@@ -27,6 +29,10 @@ class Waiter:
                     self.send_order(table, order)
                 else:
                     table.lock_order_state.release()
+            while len(self.order_to_serve) > 0:
+                current_order = self.order_to_serve[0]
+                self.dinning_hall.tables[current_order.table_id - 1].receive_the_order(current_order)
+                self.order_to_serve.pop(0)
 
     # simulate waiters actions toward a new table
     def get_the_order(self, table, pick_up_time):
