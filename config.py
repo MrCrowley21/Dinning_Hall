@@ -8,6 +8,6 @@ waiting_to_make_an_order = 1
 waiting_for_an_order_to_be_served = 2
 
 # define constants
-time_unit = 0.5
+time_unit = 0.1
 nr_tables = 7
 nr_waiters = 3
