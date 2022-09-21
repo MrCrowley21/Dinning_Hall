@@ -37,7 +37,10 @@ class Table:
         # select the items and set related data
         items = random.choices(self.dinning_hall.foods, k=items_nr)
         items_id = [i['id'] for i in items]
-        priority = 1  # set priority (temporary constant)
+        if items_nr > 1:
+            priority = items_nr // 2  # set priority (by the number of orders)
+        else:
+            priority = 1
         max_wait = 1.3 * max(i['preparation-time'] for i in items)  # set the max waiting time for order receiving
         self.order = Order(order_id, self.table_id, waiter_id, items_id, priority, max_wait)
         # notify about item generation
