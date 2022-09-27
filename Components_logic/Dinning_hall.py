@@ -6,6 +6,7 @@ import requests
 from Components_logic.Menu import *
 from Components_logic.Table import *
 from Components_logic.Waiter import *
+from Components_logic.Rating_system import *
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -19,6 +20,7 @@ class DinningHall:
         self.tables = [Table(i + 1, self) for i in range(nr_tables)]
         # initialize list of waiters with Waiter objects
         self.waiters = [Waiter(i + 1, self) for i in range(nr_waiters)]
+        self.rating_system = RatingSystem()
 
     # start the process of generating, picking up and sending the orders
     def get_orders(self):
