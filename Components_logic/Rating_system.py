@@ -22,4 +22,7 @@ class RatingSystem:
         return mark
 
     def compute_average_mark(self):
-        return sum(self.marks) / len(self.marks)
+        if len(self.marks) > 0:
+            return sum(self.marks) / len(self.marks)
+        else:
+            return 0

@@ -22,10 +22,18 @@ def receive_prepared_order():
     return jsonify(received_order)
 
 
+@app.route('/v2/order', methods=['POST'])
+def receive_client_server_order():
+    client_service_order = request.json  # extract sent data
+    logging.info(f'New order {client_service_order["order_id"]} received for the Client Service')
+    return jsonify(client_service_order)
+
+
 # start the program execution
 if __name__ == "__main__":
     # initialize server as a thread
-    Thread(target=lambda: app.run(port=8000, host="0.0.0.0", debug=True, use_reloader=False)).start()
+    Thread(target=lambda: app.run(port=port, host="0.0.0.0", debug=True, use_reloader=False)).start()
     # initialize dinning hall
     dinning_hall = DinningHall()
+    dinning_hall.register_restaurant()
     dinning_hall.get_orders()
