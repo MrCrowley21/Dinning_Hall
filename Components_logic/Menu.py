@@ -1,5 +1,7 @@
 import json
 
+from config import *
+
 
 # initialize food items from the menu
 class Menu:
@@ -8,6 +10,6 @@ class Menu:
 
     # get food from the menu
     def get_foods(self):
-        with open('dinning_hall_data/menu.json') as json_file:
+        with open(menu) as json_file:
             self.foods = json.load(json_file)
         return self.foods
