@@ -22,7 +22,7 @@ def receive_prepared_order():
     return jsonify(received_order)
 
 
-@app.route('/v2/order', methods=['POST'])
+@app.route('/order', methods=['POST'])
 def receive_client_server_order():
     client_service_order = request.json  # extract sent data
     logging.info(f'New order {client_service_order["order_id"]} received for the Client Service')

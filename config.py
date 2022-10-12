@@ -31,7 +31,7 @@ nr_tables = 6
 nr_waiters = 3
 
 # define configs according to the restaurants
-restaurant_id = '4'
+restaurant_id = '1'
 restaurant_name = 'Restaurant_' + restaurant_id
 port = ports['port_' + restaurant_id]
 dinning_hall_url = 'http://127.0.0.1:' + str(port) + '/'
