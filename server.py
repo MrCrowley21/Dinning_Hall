@@ -4,6 +4,7 @@ from Components_logic.Dinning_hall import *
 from Components_logic.Table import *
 from Components_logic.Waiter import *
 from Components_logic.Prepared_order import *
+from Components_logic.Client_server_order import *
 
 # initialize the logger mode
 logging.basicConfig(level=logging.DEBUG)
@@ -26,6 +27,8 @@ def receive_prepared_order():
 def receive_client_server_order():
     client_service_order = request.json  # extract sent data
     logging.info(f'New order {client_service_order["order_id"]} received for the Client Service')
+    order = ClientServerOrder(client_service_order)
+    requests.post(f'{kitchen_url}receive_order', json=order.__dict__)
     return jsonify(client_service_order)
 
 

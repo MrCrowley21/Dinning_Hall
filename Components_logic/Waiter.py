@@ -22,12 +22,16 @@ class Waiter:
             for table in tables:
                 # picking up the orders if table is ready
                 table.lock_order_state.acquire()
-                if table.state == waiting_to_make_an_order:
+                self.dinning_hall.waiting_list_lock.acquire()
+                if table.state == waiting_to_make_an_order and self.dinning_hall.max_capacity > 0:
                     table.generate_order(self.waiter_id)
                     pick_up_time = time()
                     order = self.get_the_order(table, pick_up_time)
+                    self.dinning_hall.max_capacity -= 1
+                    self.dinning_hall.waiting_list_lock.release()
                     self.send_order(table, order)
                 else:
+                    self.dinning_hall.waiting_list_lock.release()
                     table.lock_order_state.release()
             while len(self.order_to_serve) > 0:
                 current_order = self.order_to_serve[0]
@@ -49,7 +53,7 @@ class Waiter:
         # notify about order details
         logging.info(f'Waiter {self.waiter_id} is picking up the order from table {table.table_id} '
                      f'order {order.order_id}')
-        requests.post(f'{kitchen_container_url}receive_order', json=order.__dict__)
+        requests.post(f'{kitchen_url}receive_order', json=order.__dict__)
         # notify about successful request to the kitchen
         logging.info(f'Order {order.order_id} with the following structure:\n'
                      f'{order.__dict__}\n has been sent to the Kitchen')
