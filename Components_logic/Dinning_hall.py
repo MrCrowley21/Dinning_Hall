@@ -25,7 +25,7 @@ class DinningHall:
         self.registration_data = RegistrationData()
         self.rating_system = RatingSystem()
         self.waiting_orders = []  # queue of orders waiting to be prepared
-        self.max_capacity = 4  # max number of orders in buffer
+        self.max_capacity = 14  # max number of orders in buffer
         self.waiting_list_lock = Lock()  # the mutex on the buffer
 
     # start the process of generating, picking up and sending the orders
@@ -46,7 +46,7 @@ class DinningHall:
     # notify the table about food arrival
     def receive_the_order(self, prepared_order):
         self.waiting_list_lock.acquire()
-        self.max_capacity += 1
+        self.max_capacity += len(prepared_order.items_id)
         self.waiting_list_lock.release()
         current_waiter = self.waiters[prepared_order.waiter_id - 1]
         with current_waiter.lock:
