@@ -19,6 +19,12 @@ class Waiter:
     # simulate picking the order up process
     def serve_tables(self, tables):
         while True:
+            while len(self.order_to_serve) > 0:
+                current_order = self.order_to_serve[0]
+                preparing_time = (time() - current_order.pick_up_time) / time_unit
+                self.dinning_hall.tables[current_order.table_id - 1].receive_the_order(current_order, preparing_time)
+                self.order_to_serve.pop(0)
+
             for table in tables:
                 # picking up the orders if table is ready
                 table.lock_order_state.acquire()
@@ -27,16 +33,12 @@ class Waiter:
                     table.generate_order(self.waiter_id)
                     pick_up_time = time()
                     order = self.get_the_order(table, pick_up_time)
-                    self.dinning_hall.max_capacity -= 1
+                    self.dinning_hall.max_capacity -= len(order.items_id)
                     self.dinning_hall.waiting_list_lock.release()
                     self.send_order(table, order)
                 else:
                     self.dinning_hall.waiting_list_lock.release()
                     table.lock_order_state.release()
-            while len(self.order_to_serve) > 0:
-                current_order = self.order_to_serve[0]
-                self.dinning_hall.tables[current_order.table_id - 1].receive_the_order(current_order)
-                self.order_to_serve.pop(0)
 
     # simulate waiters actions toward a new table
     def get_the_order(self, table, pick_up_time):

@@ -19,7 +19,8 @@ def receive_prepared_order():
     received_order = request.json  # extract sent data
     prepared_order = PreparedOrder(received_order)
     logging.info(f'Prepared order {received_order["order_id"]} received for the table {received_order["table_id"]}')
-    dinning_hall.receive_the_order(prepared_order)  # announce dinning hall about food arrival
+    # dinning_hall.receive_the_order(prepared_order)  # announce dinning hall about food arrival
+    Thread(target=dinning_hall.receive_the_order, args=(prepared_order,)).start()
     return jsonify(received_order)
 
 
@@ -28,7 +29,7 @@ def receive_client_server_order():
     client_service_order = request.json  # extract sent data
     logging.info(f'New order {client_service_order["order_id"]} received for the Client Service')
     order = ClientServerOrder(client_service_order)
-    requests.post(f'{kitchen_url}receive_order', json=order.__dict__)
+    requests.post(f'{kitchen_container_url}receive_order', json=order.__dict__)
     return jsonify(client_service_order)
 
 
@@ -38,5 +39,5 @@ if __name__ == "__main__":
     Thread(target=lambda: app.run(port=port, host="0.0.0.0", debug=True, use_reloader=False)).start()
     # initialize dinning hall
     dinning_hall = DinningHall()
-    dinning_hall.register_restaurant()
+    # dinning_hall.register_restaurant()
     dinning_hall.get_orders()
