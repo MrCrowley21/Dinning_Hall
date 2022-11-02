@@ -17,8 +17,8 @@ urls_for_kitchen = {
     'kitchen_url_4': 'http://127.0.0.1:8083/',
     'kitchen_container_url_4': 'http://kitchen_container_4:8083/'
 }
-food_ordering_url = 'http://127.0.0.1:5004/'
-food_ordering_container_url = 'http://food_ordering_container:5004/'
+food_ordering_url = 'http://127.0.0.1:5002/'
+food_ordering_container_url = 'http://food_ordering_container:5002/'
 
 # table states
 free = 0

@@ -11,6 +11,7 @@ class ClientServerOrder:
         self.priority = client_server_order['priority']
         self.max_wait = client_server_order['max_wait']
         self.created_time = client_server_order['created_time']
+        self.registered_time = None
         self.prepared_time = None
         self.cooking_time = None
         self.cooking_details = None

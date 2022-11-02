@@ -21,6 +21,9 @@ class RatingSystem:
         self.marks.append(mark)
         return mark
 
+    def add_mark(self, mark):
+        self.marks.append(mark)
+
     def compute_average_mark(self):
         if len(self.marks) > 0:
             return sum(self.marks) / len(self.marks)
