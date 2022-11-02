@@ -31,6 +31,9 @@ class Waiter:
                 self.dinning_hall.waiting_list_lock.acquire()
                 if table.state == waiting_to_make_an_order and self.dinning_hall.max_capacity > 0:
                     table.generate_order(self.waiter_id)
+                    self.dinning_hall.waiting_list_lock.acquire()
+                    self.dinning_hall.is_available = True
+                    self.dinning_hall.waiting_list_lock.release()
                     pick_up_time = time()
                     order = self.get_the_order(table, pick_up_time)
                     self.dinning_hall.max_capacity -= len(order.items_id)
@@ -39,6 +42,11 @@ class Waiter:
                 else:
                     self.dinning_hall.waiting_list_lock.release()
                     table.lock_order_state.release()
+
+                if self.dinning_hall.max_capacity <= 0:
+                    self.dinning_hall.waiting_list_lock.acquire()
+                    self.dinning_hall.is_available = False
+                    self.dinning_hall.waiting_list_lock.release()
 
     # simulate waiters actions toward a new table
     def get_the_order(self, table, pick_up_time):

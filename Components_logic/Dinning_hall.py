@@ -2,6 +2,7 @@ import threading
 from threading import Thread
 import logging
 import requests
+from time import time
 
 from Components_logic.Menu import *
 from Components_logic.Table import *
@@ -25,8 +26,10 @@ class DinningHall:
         self.registration_data = RegistrationData()
         self.rating_system = RatingSystem()
         self.waiting_orders = []  # queue of orders waiting to be prepared
-        self.max_capacity = 14  # max number of orders in buffer
+        self.max_capacity = 10  # max number of orders in buffer
         self.waiting_list_lock = Lock()  # the mutex on the buffer
+        self.client_server_orders = {}  # the orders of clients from client server
+        self.is_available = True
 
     # start the process of generating, picking up and sending the orders
     def get_orders(self):
@@ -48,14 +51,24 @@ class DinningHall:
         self.waiting_list_lock.acquire()
         self.max_capacity += len(prepared_order.items_id)
         self.waiting_list_lock.release()
-        current_waiter = self.waiters[prepared_order.waiter_id - 1]
-        with current_waiter.lock:
-            current_waiter.order_to_serve.append(prepared_order)
+        if prepared_order.waiter_id is not None:
+            current_waiter = self.waiters[prepared_order.waiter_id - 1]
+            with current_waiter.lock:
+                current_waiter.order_to_serve.append(prepared_order)
+        else:
+            self.lock.acquire()
+            current_order = self.client_server_orders[prepared_order.order_id]
+            current_order.prepared_time = time()
+            current_order.is_ready = True
+            current_order.cooking_time = prepared_order.cooking_time
+            current_order.cooking_details = prepared_order.cooking_details
+            current_order.estimated_waiting_time = 0
+            self.lock.release()
 
     def register_restaurant(self):
         self.registration_data.menu_items = len(self.foods)
         self.registration_data.menu = self.foods
         self.registration_data.rating = self.rating_system.compute_average_mark()
         # send registration data
-        requests.post(f'{food_ordering_container_url}register', json=self.registration_data.__dict__)
+        requests.post(f'{food_ordering_url}register', json=self.registration_data.__dict__)
         logging.info(f'Restaurant {restaurant_id} send its registration data')
