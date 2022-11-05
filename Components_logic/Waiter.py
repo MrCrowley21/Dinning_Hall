@@ -55,7 +55,7 @@ class Waiter:
         # notify about order details
         logging.info(f'Waiter {self.waiter_id} is picking up the order from table {table.table_id} '
                      f'order {order.order_id}')
-        requests.post(f'{kitchen_url}receive_order', json=order.__dict__)
+        requests.post(f'{kitchen}receive_order', json=order.__dict__)
         # notify about successful request to the kitchen
         logging.info(f'Order {order.order_id} with the following structure:\n'
                      f'{order.__dict__}\n has been sent to the Kitchen')

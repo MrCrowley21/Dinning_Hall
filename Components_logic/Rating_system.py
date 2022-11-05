@@ -1,8 +1,10 @@
 from Components_logic.Dinning_hall import *
+from threading import Lock
 
 
 class RatingSystem:
     def __init__(self):
+        self.lock = Lock()
         self.marks = []
 
     def get_mark(self, preparing_time, max_wait):
@@ -18,11 +20,15 @@ class RatingSystem:
             mark = 1
         else:
             mark = 0
+        self.lock.acquire()
         self.marks.append(mark)
+        self.lock.release()
         return mark
 
     def add_mark(self, mark):
+        self.lock.acquire()
         self.marks.append(mark)
+        self.lock.release()
 
     def compute_average_mark(self):
         if len(self.marks) > 0:

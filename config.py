@@ -19,6 +19,8 @@ urls_for_kitchen = {
 }
 food_ordering_url = 'http://127.0.0.1:5002/'
 food_ordering_container_url = 'http://food_ordering_container:5002/'
+# food_ordering = food_ordering_url
+food_ordering = food_ordering_container_url
 
 # table states
 free = 0
@@ -27,16 +29,18 @@ waiting_for_an_order_to_be_served = 2
 
 # define constants
 time_unit = 0.5
-nr_tables = 5
-nr_waiters = 4
+nr_tables = 6
+nr_waiters = 3
 
 # define configs according to the restaurants
 restaurant_id = '1'
 restaurant_name = 'Restaurant_' + restaurant_id
 port = ports['port_' + restaurant_id]
 dinning_hall_url = 'http://127.0.0.1:' + str(port) + '/'
-dinning_hall_container_url = 'http://dining_hall_container_' + restaurant_id + ':' + str(port) + '/'
+dinning_hall_container_url = 'http://dinning_hall_container_' + restaurant_id + ':' + str(port) + '/'
 kitchen_url = urls_for_kitchen['kitchen_url_' + restaurant_id]
 kitchen_container_url = urls_for_kitchen['kitchen_container_url_' + restaurant_id]
-# menu = 'dinning_hall_data/menu_' + restaurant_id + '.json'
-menu = 'dinning_hall_data/menu.json'
+# kitchen = kitchen_url
+kitchen = kitchen_container_url
+menu = 'dinning_hall_data/menu_' + restaurant_id + '.json'
+# menu = 'dinning_hall_data/menu.json'
