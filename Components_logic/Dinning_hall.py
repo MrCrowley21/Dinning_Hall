@@ -26,7 +26,7 @@ class DinningHall:
         self.registration_data = RegistrationData()
         self.rating_system = RatingSystem()
         self.waiting_orders = []  # queue of orders waiting to be prepared
-        self.max_capacity = 10  # max number of orders in buffer
+        self.max_capacity = 8  # max number of orders in buffer
         self.waiting_list_lock = Lock()  # the mutex on the buffer
         self.client_server_orders = {}  # the orders of clients from client server
         self.is_available = True
@@ -51,7 +51,6 @@ class DinningHall:
         self.waiting_list_lock.acquire()
         self.max_capacity += len(prepared_order.items_id)
         self.waiting_list_lock.release()
-        print(f'Here33333333 {prepared_order.waiter_id}')
         if prepared_order.waiter_id is not None:
             current_waiter = self.waiters[prepared_order.waiter_id - 1]
             with current_waiter.lock:
@@ -64,7 +63,7 @@ class DinningHall:
             current_order.cooking_time = prepared_order.cooking_time
             current_order.cooking_details = prepared_order.cooking_details
             current_order.estimated_waiting_time = 0
-            logging.info(f'666666666 {current_order.__dict__}')
+            logging.info(f'Prepared order for Food Ordering:\n {current_order.__dict__}')
             self.lock.release()
 
     def register_restaurant(self):
@@ -72,5 +71,5 @@ class DinningHall:
         self.registration_data.menu = self.foods
         self.registration_data.rating = self.rating_system.compute_average_mark()
         # send registration data
-        requests.post(f'{food_ordering_url}register', json=self.registration_data.__dict__)
+        requests.post(f'{food_ordering}register', json=self.registration_data.__dict__)
         logging.info(f'Restaurant {restaurant_id} send its registration data')

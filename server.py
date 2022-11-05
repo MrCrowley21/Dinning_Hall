@@ -38,11 +38,11 @@ def receive_client_server_order():
     dinning_hall.max_capacity -= len(order.items)
     dinning_hall.lock.release()
     logging.info(f'New order received for the Client Service')
-    kitchen_response = requests.post(f'{kitchen_container_url}receive_order', json=order.__dict__).json()
+    kitchen_response = requests.post(f'{kitchen}receive_order', json=order.__dict__).json()
     registered_time = time.time()
     order.registered_time = registered_time
     logging.info(f'{kitchen_response}')
-    response = {'restaurant_id': restaurant_id, 'restaurant_address': dinning_hall_url,
+    response = {'restaurant_id': restaurant_id, 'restaurant_address': dinning_hall_container_url,
                 'order_id': order_id, 'estimated_waiting_time': kitchen_response['estimated_waiting_time'],
                 'created_time': kitchen_response['created_time'], 'registered_time': registered_time}
     order.estimated_waiting_time = kitchen_response['estimated_waiting_time']
@@ -53,17 +53,15 @@ def receive_client_server_order():
 def get_order_state(id_user):
     dinning_hall.lock.acquire()
     order = deepcopy(dinning_hall.client_server_orders[id_user].__dict__)
-    # logging.info(f'77777777777 {dinning_hall.client_server_orders}')
     order_id = order['order_id']
     response = \
-        requests.get(f'{kitchen_url}check_preparation/{order_id}').json()
-    logging.info(f'77777777777 {response}')
+        requests.get(f'{kitchen}check_preparation/{order_id}').json()
+    logging.info(f'Kitchen updating order state: {response}')
     if dinning_hall.client_server_orders[id_user].is_ready:
         dinning_hall.lock.release()
         order['estimated_waiting_time'] = 0
     else:
         dinning_hall.lock.release()
-        # order['estimated_waiting_time'] = response['estimated_time']
         order['estimated_waiting_time'] = response['estimated_time']
     order.pop('client_id', None)
     order.pop('items', None)
@@ -75,6 +73,7 @@ def get_order_state(id_user):
 def get_rating():
     rating_data = request.json
     dinning_hall.rating_system.add_mark(rating_data['rating'])
+    logging.info(f'Food ordering gave mark {rating_data["rating"]}')
     dinning_hall.rating_system.compute_average_mark()
     return jsonify(rating_data)
 
@@ -87,8 +86,10 @@ def update_restaurant_data():
     else:
         dinning_hall.is_available = True
     dinning_hall.waiting_list_lock.release()
-    return {'rating': dinning_hall.rating_system.compute_average_mark(),
-            'is_available': dinning_hall.is_available}
+    rating = dinning_hall.rating_system.compute_average_mark()
+    response = {'rating': rating,
+                'is_available': dinning_hall.is_available}
+    return response
 
 
 # start the program execution
